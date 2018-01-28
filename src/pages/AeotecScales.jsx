@@ -1,4 +1,4 @@
-import { scaleLinear, scaleLog, scaleTime } from 'd3-scale';
+//import { scaleLinear, scaleLog, scaleTime } from 'd3-scale';
 import * as d3 from "d3";
 
 class AeotecScales {

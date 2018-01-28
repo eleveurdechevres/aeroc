@@ -5,10 +5,7 @@ import { FocusValues } from './FocusValues';
 //import axios from 'axios';
 import GraphType from './GraphType';
 
-import { scaleLinear, scaleLog, scaleTime } from 'd3-scale';
 import { line } from 'd3-shape';
-import { select } from 'd3-selection';
-import { axisLeft, axisBottom } from 'd3-axis';
 import 'd3-transition';
 import AeotecScales from './AeotecScales.jsx';
 
@@ -21,7 +18,6 @@ var marginVertical = 10;
 var marginChart = {left: 30, right: 10, top: 100, bottom: 100 + contextHeight };
 
 var chartWidth = svgWidth - marginChart.left - marginChart.right;
-var chartHeight = svgHeight - marginChart.top - marginChart.bottom;
 
 
 var originx = marginChart.left;
@@ -33,21 +29,21 @@ var top4 = marginChart.top + 3*chartHeight + 3*marginVertical;
 
 var timeScale = undefined;
 
-var brush = d3.brushX()
-    .extent([[0, 0], [chartWidth, contextHeight]])
-    .on("brush end", this.brushed);
+// var brush = d3.brushX()
+//     .extent([[0, 0], [chartWidth, contextHeight]])
+//     .on("brush end", this.brushed);
 
 
 
 export class GraphicComponent extends Component {
 
-  state = {
-    jsonData: [],
-    mapJsonData: new Map()
-  };
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+    this.state = {
+      jsonData: [],
+      mapJsonData: new Map()
+    };
   }
 
   componentWillMount() {
@@ -102,12 +98,13 @@ export class GraphicComponent extends Component {
       .attr("transform", "translate(" + originx + ", " + originy + ")");
 
   //The line SVG Path we draw
-    var lineGraph = svgContainer.append("path")
-                                .datum(data)
-                                .attr("d", lineFunction)
-                                .attr("fill", "none")
-                                .attr("stroke", graphType.color)
-                                .attr("stroke-width", 1);
+    //var lineGraph = 
+    svgContainer.append("path")
+      .datum(data)
+      .attr("d", lineFunction)
+      .attr("fill", "none")
+      .attr("stroke", graphType.color)
+      .attr("stroke-width", 1);
 
   // focus.append("circle")
   //     .attr("r", 4.5);
@@ -191,9 +188,9 @@ export class GraphicComponent extends Component {
     // Luminosité capteur 1
     var capteur1Channel4 = this.state.mapJsonData.get("1").get("4");
     // Batterie capteur 1
-    var capteur1Channel5 = this.state.mapJsonData.get("1").get("5");
+    //var capteur1Channel5 = this.state.mapJsonData.get("1").get("5");
     // Sabotage capteur 1
-    var capteur1Channel9 = this.state.mapJsonData.get("1").get("9");
+    //var capteur1Channel9 = this.state.mapJsonData.get("1").get("9");
 
     this.drawDateAxis();
 
@@ -239,9 +236,9 @@ export class GraphicComponent extends Component {
         let mapCapteur = mapCapteurs.get(item.capteur_id)
         //mapCapteurs.set(item.capteur_id, item);
         if( !mapCapteur.get(item.channel_id) ) {
-          mapCapteur.set(item.channel_id, new Array());
+          mapCapteur.set(item.channel_id, []);
         }
-        let arrayChannel = mapCapteur.get(item.channel_id)
+        //let arrayChannel = mapCapteur.get(item.channel_id)
         mapCapteurs.get(item.capteur_id).get(item.channel_id).push(item);
       });
       // console.log(mapCapteurs);
@@ -296,7 +293,7 @@ export class GraphicComponent extends Component {
   
   mousemove() {
 
-    var bisectDate = d3.bisector(function(d) { return d.date; }).left;
+    //var bisectDate = d3.bisector(function(d) { return d.date; }).left;
     var verticalFocusGroup = d3.select("g.verticalFocus");
     verticalFocusGroup.attr("display", null)
 
@@ -311,8 +308,8 @@ export class GraphicComponent extends Component {
       .attr("stroke", "black")
       .attr("stroke-width", "1");
     //var capteur1Channel1 = this.state.mapJsonData.get("1").get("1");
-    var presenceGraph = d3.select('.' + GraphType.PRESENCE.svgClass);
-    var path = presenceGraph.selectAll('path');
+    //var presenceGraph = d3.select('.' + GraphType.PRESENCE.svgClass);
+    //var path = presenceGraph.selectAll('path');
     console.log(d3.select("GraphicComponent"));
     console.log("mouseMove " + d3.mouse(this)[0] + " : " + x0);
     // var i = bisectDate(capteur1Channel1, x0, 1);

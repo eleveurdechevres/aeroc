@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import * as d3 from "d3";
 import GraphType from './GraphType';
 
 export class FocusValues extends Component {

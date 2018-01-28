@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ClientSearchComponent } from './ClientSearchComponent';
+//import { ClientSearchComponent } from './ClientSearchComponent';
 
 export class ClientSummary extends Component {
 
@@ -14,7 +14,7 @@ export class ClientSummary extends Component {
         // console.log("componentWillReceiveProps");
         // console.log(nextProps);
         // console.log("===========================");
-        if( nextProps != this.props ) {
+        if( nextProps !== this.props ) {
             this.setState({
                 currentClient: nextProps.client
             });
@@ -23,7 +23,7 @@ export class ClientSummary extends Component {
 
     render() {
         var currentClient = this.state.currentClient;
-        if( currentClient == undefined )  {
+        if( currentClient === undefined )  {
             return (
                 <div></div>
             );                

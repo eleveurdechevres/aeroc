@@ -1,9 +1,10 @@
 import React from "react";
-import { render } from "react-dom";
+// import { render } from "react-dom";
 
 // Import React Table
 import ReactTable from "react-table";
 import "react-table/react-table.css";
+import { HabitatsTable } from '../Habitat/HabitatsTable';
 
 export class ClientsTable extends React.Component {
 
@@ -16,10 +17,7 @@ export class ClientsTable extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    // console.log("componentWillReceiveProps");
-    // console.log(nextProps);
-    // console.log("===========================");
-    if( nextProps != this.props ) {
+    if( nextProps !== this.props ) {
         this.setState({
             clients: nextProps.clients
         });
@@ -31,21 +29,22 @@ export class ClientsTable extends React.Component {
   // adresse
   // email
   // telephone
-  onRowClick(state, rowInfo, column, instance) {
+  onRowClick = (state, rowInfo, column, instance) => {
     return {
         onClick: e => {
-            console.log('A Td Element was clicked!')
-            console.log('it produced this event:', e)
-            console.log('It was in this column:', column)
-            console.log('It was in this row:', rowInfo)
-            console.log('It was in this table instance:', instance)
+          var client = rowInfo.original;
+          this.props.handler( client );
+          // console.log('A Td Element was clicked!')
+          // console.log('it produced this event:', e)
+          // console.log('It was in this column:', column)
+          // console.log('It was in this row:', rowInfo)
+          // console.log('It was in this table instance:', instance)
         }
     }
   }
 
   render() {
     const { clients } = this.state;
-    console.log(clients);
     const columns = [
       { Header: "Id",
         accessor: "id"
@@ -64,14 +63,14 @@ export class ClientsTable extends React.Component {
       }
     ];
 
-    if( clients.length == 0 || ( clients.length == 1 && clients[0] == undefined ) ) {
+    if( clients.length === 0 || ( clients.length === 1 && clients[0] === undefined ) ) {
       return (
         <div></div>
       );
     }
 
-
     return (
+
       <div>
         <ReactTable
           data={clients}
@@ -79,6 +78,12 @@ export class ClientsTable extends React.Component {
           defaultPageSize={1}
           className="-striped -highlight"
           getTrProps={this.onRowClick}
+          showPagination={false}
+          showPageJump={false}
+          sortable={false}
+          SubComponent={ row => {
+            return (<HabitatsTable client={row.original} />);
+          }}
         />
         <br />
       </div>

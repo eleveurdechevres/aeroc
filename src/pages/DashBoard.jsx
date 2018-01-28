@@ -3,20 +3,22 @@ import { ClientSearchComponent } from './ClientSearchComponent';
 import { ClientSummary } from './ClientSummary';
 import { ClientsTable } from './Client/ClientsTable';
 import 'react-select/dist/react-select.css';
-
 export class DashBoard extends Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            toto: "essai",
-            currentClient: undefined
+            currentClient: undefined,
+            habitats: []
         };
     }
 
-    handlerClientSearch(client) {
-        console.log("handlerClientSearch " + client.nom + " " + client.id);
+    handlerClientSearch = (client) => {
         this.setState({ currentClient: client });
+    }
+
+    handlerClientSelect= (client) => {
+        //this.getHabitatsForClient(client.id);    
     }
 
     render() {
@@ -24,11 +26,11 @@ export class DashBoard extends Component {
             <div>
                 <header>
                     <p>ALIA Header</p>
-                    <p><button onClick={this.handleClick}>toto</button></p>
-                    <ClientSearchComponent handler={this.handlerClientSearch.bind(this)}/>
+                    <ClientSearchComponent handler={this.handlerClientSearch}/>
+                    <br/>
                     <ClientSummary client={this.state.currentClient}/>
                 </header>
-                <ClientsTable clients={[this.state.currentClient]}/>
+                <ClientsTable clients={[this.state.currentClient]} handler={this.handlerClientSelect}/>
                 <footer>
                     ALIA Footer : {this.state.toto}
                 </footer>
