@@ -35,7 +35,7 @@ var timeScale = undefined;
 
 
 
-export class GraphicComponent extends Component {
+export class GraphBoard extends Component {
 
 
   constructor(props) {

@@ -42,6 +42,7 @@
     "react-dev-utils": "^4.2.1",
     "react-document-title": "^2.0.3",
     "react-dom": "^16.2.0",
+    "react-popupbox": "^2.0.1",
     "react-router": "^4.2.0",
     "react-select": "^1.2.1",
     "react-stormpath": "^2.0.1",

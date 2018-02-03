@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 //import logo from './logo.svg';
 import './App.css';
-//import { GraphicComponent } from './graphics/GraphicComponent.jsx';
+import { GraphicComponent } from './pages/GraphicComponent.jsx';
 import { DashBoard } from './pages/DashBoard.jsx';
 
 class App extends Component {

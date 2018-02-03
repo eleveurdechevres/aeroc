@@ -1,6 +1,9 @@
 import React from 'react';
 import * as d3 from "d3";
 import $ from 'jquery'; 
+import { window } from 'd3-selection';
+import { PopupboxManager, PopupboxContainer } from 'react-popupbox';
+import styles from "react-popupbox";
 
 export class Plan extends React.Component {
 
@@ -13,6 +16,7 @@ export class Plan extends React.Component {
     gCapteurLegend;
     rectCapteurLegend;
     textCapteurLegend;
+    refDivChart;
 
     constructor(props) {
         super(props);
@@ -102,6 +106,7 @@ export class Plan extends React.Component {
             .append("circle")
             .on("mouseover", this.afficheLegendeCapteur)
             .on("mouseout", this.masqueLegendeCapteur)
+            .on("click", this.openPopupbox)
             .attr("cx", (capteur)=>capteur.coordonneePlanX)
             .attr("cy", (capteur)=>capteur.coordonneePlanY)
             .attr("r", 0)
@@ -139,18 +144,67 @@ export class Plan extends React.Component {
             .attr("opacity", 0);
     }
 
+
+    openPopupbox() {
+        console.log("openPopupbox")
+        // const content = <img url="/pages/tmp/fleur.jpg" />
+        const content = (
+          <div>
+            <p className="quotes">Work like you don't need the money.</p>
+            <p className="quotes">Dance like no one is watching.</p>
+            <p className="quotes">And love like you've never been hurt.</p>
+            <span className="quotes-from">― Mark Twain</span>
+          </div>
+        )
+    PopupboxManager.open({
+            content,
+            config: {
+                className: "popupbox-wrapper",
+                overlayOpacity: 0.75,
+                overlayClose: true,
+                titleBar: {
+                    //className: "",
+                    enable: true,
+                    text: 'Flower!',
+                    closeButton: true,
+                    //closeButtonClassName
+                    closeText: 'x',
+                    position: 'top'
+                },
+                // onOpen: callback,
+                // onComplete: callback,
+                // onCleanup: callback,
+                // onClosed: callback
+            }
+        })
+    }
+    // openPopupbox() {
+    //     const content = (
+    //       <div>
+    //         <p className="quotes">Work like you don't need the money.</p>
+    //         <p className="quotes">Dance like no one is watching.</p>
+    //         <p className="quotes">And love like you've never been hurt.</p>
+    //         <span className="quotes-from">― Mark Twain</span>
+    //       </div>
+    //     )
+    //     PopupboxManager.open({ content })
+    //   }
     render() {
         return (
-            // <div>
-            // <img src={this.state.planImage} alt='toto'></img>
-            // </div>
-            <svg ref={(ref) => {this.svgRef = ref}} width={this.state.width} height={this.state.height}>
-                <image ref={(ref) => {this.imageRef = ref}}></image>
-                <g ref={(ref) => {this.gCapteurLegend = ref}} opacity="0">
-                    <rect ref={(ref) => {this.rectCapteurLegend = ref}} x='0' y='0' width='100' height='14' fill="white" stroke="black" strokeWidth=""/>
-                    <text ref={(ref) => {this.textCapteurLegend = ref}} x='50' y='7' fontSize='11' textAnchor='middle' alignmentBaseline='middle' fill='black'>capteur</text>
-                </g>
-            </svg>
+            <div className="container">
+                <svg ref={(ref) => {this.svgRef = ref}} width={this.state.width} height={this.state.height}>
+                    <image ref={(ref) => {this.imageRef = ref}}></image>
+                    <g ref={(ref) => {this.gCapteurLegend = ref}} opacity="0">
+                        <rect ref={(ref) => {this.rectCapteurLegend = ref}} x='0' y='0' width='100' height='14' fill="white" stroke="black" strokeWidth="1"/>
+                        <text ref={(ref) => {this.textCapteurLegend = ref}} x='50' y='7' fontSize='11' textAnchor='middle' alignmentBaseline='middle' fill='black'>capteur</text>
+                    </g>
+                </svg>
+                <div>
+                    <PopupboxContainer />
+                </div>
+                {/* <div className="overlayGraph" ref={(ref) => {this.refDivChart = ref}} opacity='0'>
+                </div> */}
+            </div>
         );
     }
 }
