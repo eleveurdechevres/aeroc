@@ -14,7 +14,9 @@ export class HabitatsTable extends React.Component {
 
     this.state = {
         client: props.client,
-        habitats: []
+        habitats: [],
+        startDate: undefined,
+        stopDate: undefined
     };
   }
 

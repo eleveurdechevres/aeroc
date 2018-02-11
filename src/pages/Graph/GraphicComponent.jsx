@@ -3,7 +3,7 @@ import * as d3 from "d3";
 import $ from 'jquery'; 
 import { FocusValues } from './FocusValues';
 //import axios from 'axios';
-import GraphType from './GraphType';
+import GraphType from './Channel/GraphType';
 
 import { line } from 'd3-shape';
 import 'd3-transition';
@@ -224,7 +224,7 @@ export class GraphicComponent extends Component {
   init() {
   }
 
-  loadJsonFromAeroc(dateBegin, dateEnd, callback) {
+  loadJsonFromAeroc(dateBegin, dateEnd, callback = null) {
       // LOAD DATA from AEROC
     $.getJSON('http://test.ideesalter.com/alia_readMesure.php?date_begin=' + dateBegin + '&date_end=' + dateEnd, function(data) {
       console.log('http://test.ideesalter.com/alia_readMesure.php?date_begin=' + dateBegin + '&date_end=' + dateEnd);
@@ -271,7 +271,7 @@ export class GraphicComponent extends Component {
       // data.forEach(mesure => {
       //   this.jsonData.push(mesure);
       // });
-      callback();
+      if( callback != null ) callback();
     }.bind(this));
   }
 

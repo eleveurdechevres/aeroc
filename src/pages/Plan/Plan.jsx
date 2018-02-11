@@ -2,8 +2,33 @@ import React from 'react';
 import * as d3 from "d3";
 import $ from 'jquery'; 
 import { window } from 'd3-selection';
-import { PopupboxManager, PopupboxContainer } from 'react-popupbox';
-import styles from "react-popupbox";
+import Modal from 'react-modal';
+import {GraphBoard} from '../Graph/GraphBoard';
+
+const customStyles = {
+    overlay : {
+      position          : 'fixed',
+      top               : 0,
+      left              : 0,
+      right             : 0,
+      bottom            : 0,
+      backgroundColor   : 'rgba(255, 255, 255, 0.75)'
+    },
+    content : {
+      position                   : 'absolute',
+      top                        : '40px',
+      left                       : '40px',
+      right                      : '40px',
+      bottom                     : '40px',
+      border                     : '1px solid #ccc',
+      background                 : '#fff',
+      overflow                   : 'auto',
+      WebkitOverflowScrolling    : 'touch',
+      borderRadius               : '4px',
+      outline                    : 'none',
+      padding                    : '20px'
+    }
+};
 
 export class Plan extends React.Component {
 
@@ -26,7 +51,9 @@ export class Plan extends React.Component {
             planImage: undefined,
             width: undefined,
             height: undefined,
-            capteurs: []
+            capteurs: [],
+            modalIsOpen: false,
+            capteurDisplayed: undefined
         };
     }
                 //   <img src={`http://test.ideesalter.com/alia_afficheImagePlan.php?id=${plan.id}`} alt={"étage " + plan.etage}/>
@@ -106,7 +133,7 @@ export class Plan extends React.Component {
             .append("circle")
             .on("mouseover", this.afficheLegendeCapteur)
             .on("mouseout", this.masqueLegendeCapteur)
-            .on("click", this.openPopupbox)
+            .on("click", (capteur) => {this.openModal(capteur)})
             .attr("cx", (capteur)=>capteur.coordonneePlanX)
             .attr("cy", (capteur)=>capteur.coordonneePlanY)
             .attr("r", 0)
@@ -117,6 +144,18 @@ export class Plan extends React.Component {
             .transition(transitionNewCapteur)
                 .attr("r", 10)
                 .attr("opacity", 1);
+    }
+
+    openModal = (capteur) => {
+        this.setState({modalIsOpen: true, capteurDisplayed: capteur});
+    }
+
+    afterOpenModal = () => {
+        // references are now sync'd and can be accessed.
+    }
+
+    closeModal = () => {
+        this.setState({modalIsOpen: false});
     }
 
     afficheLegendeCapteur = (capteur) => {
@@ -144,54 +183,23 @@ export class Plan extends React.Component {
             .attr("opacity", 0);
     }
 
-
-    openPopupbox() {
-        console.log("openPopupbox")
-        // const content = <img url="/pages/tmp/fleur.jpg" />
-        const content = (
-          <div>
-            <p className="quotes">Work like you don't need the money.</p>
-            <p className="quotes">Dance like no one is watching.</p>
-            <p className="quotes">And love like you've never been hurt.</p>
-            <span className="quotes-from">― Mark Twain</span>
-          </div>
-        )
-    PopupboxManager.open({
-            content,
-            config: {
-                className: "popupbox-wrapper",
-                overlayOpacity: 0.75,
-                overlayClose: true,
-                titleBar: {
-                    //className: "",
-                    enable: true,
-                    text: 'Flower!',
-                    closeButton: true,
-                    //closeButtonClassName
-                    closeText: 'x',
-                    position: 'top'
-                },
-                // onOpen: callback,
-                // onComplete: callback,
-                // onCleanup: callback,
-                // onClosed: callback
-            }
-        })
+    componentWillMount() {
+        Modal.setAppElement('body')
     }
-    // openPopupbox() {
-    //     const content = (
-    //       <div>
-    //         <p className="quotes">Work like you don't need the money.</p>
-    //         <p className="quotes">Dance like no one is watching.</p>
-    //         <p className="quotes">And love like you've never been hurt.</p>
-    //         <span className="quotes-from">― Mark Twain</span>
-    //       </div>
-    //     )
-    //     PopupboxManager.open({ content })
-    //   }
+
     render() {
         return (
             <div className="container">
+                <Modal 
+                    isOpen={this.state.modalIsOpen}
+                    onAfterOpen={this.afterOpenModal}
+                    onRequestClose={this.closeModal}
+                    contentLabel="Example Modal"
+                    style={customStyles}
+                    >
+                    <GraphBoard capteur={this.state.capteurDisplayed}/>
+                    {/* {this.graphContent} */}
+                </Modal>
                 <svg ref={(ref) => {this.svgRef = ref}} width={this.state.width} height={this.state.height}>
                     <image ref={(ref) => {this.imageRef = ref}}></image>
                     <g ref={(ref) => {this.gCapteurLegend = ref}} opacity="0">
@@ -200,10 +208,8 @@ export class Plan extends React.Component {
                     </g>
                 </svg>
                 <div>
-                    <PopupboxContainer />
+                    {/* <PopupboxContainer /> */}
                 </div>
-                {/* <div className="overlayGraph" ref={(ref) => {this.refDivChart = ref}} opacity='0'>
-                </div> */}
             </div>
         );
     }

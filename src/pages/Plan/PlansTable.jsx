@@ -5,6 +5,8 @@ import React from "react";
 import ReactTable from "react-table";
 import "react-table/react-table.css";
 import { Plan } from '../Plan/Plan';
+import { zip } from "d3-array";
+import "./Plan.css"
 
 export class PlansTable extends React.Component {
 
@@ -14,7 +16,7 @@ export class PlansTable extends React.Component {
 
     this.state = {
         habitat: props.habitat,
-        plans: []
+        plans: [],
     };
   }
 

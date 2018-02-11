@@ -1,9 +1,3 @@
-.overlayPopup{
-
-    position:absolute;
-    top:40%;/*or whatever*/
-    left:40%; /*or whatever*/
-    width:500px;
-    /*z-index:0;*/
-    background: white;
+.ui-datepicker-div {
+    z-index: 999999;
 }
