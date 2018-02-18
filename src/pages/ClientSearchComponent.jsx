@@ -40,10 +40,6 @@ export class ClientSearchComponent extends React.Component {
 			return (
 			<div className="section">
                 <AsyncComponent width="100" client={this.state.value} onChange={this.onChange.bind(this)} onValueClick={this.gotoUser} valueKey="id" labelKey="nom" loadOptions={this.getClients} />
-				<div>
-					<p>Taken from wikpedia</p>
-					<img src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO    9TXL0Y4OHwAAAABJRU5ErkJggg==" alt="Red dot" />
-				</div>
 			</div>
 		);
 	}

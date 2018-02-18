@@ -3,7 +3,6 @@ import { ClientSearchComponent } from './ClientSearchComponent';
 import { ClientSummary } from './ClientSummary';
 import { ClientsTable } from './Client/ClientsTable';
 import 'react-select/dist/react-select.css';
-import Modal from 'react-modal';
 
 const customStyles = {
     overlay : {
@@ -70,17 +69,6 @@ export class DashBoard extends Component {
                     <br/>
                     <ClientSummary client={this.state.currentClient}/>
                 </header>
-                <button onClick={this.openModal}>Open Modal</button>
-                <Modal 
-                    className="modalGraph"
-                    isOpen={this.state.modalIsOpen}
-                    onAfterOpen={this.afterOpenModal}
-                    onRequestClose={this.closeModal}
-                    contentLabel="Example Modal"
-                    style={customStyles}
-                    >
-                    {/* {this.graphContent} */}
-                </Modal>
                 <ClientsTable clients={[this.state.currentClient]} handler={this.handlerClientSelect}/>
                 <footer>
                     ALIA Footer : {this.state.toto}

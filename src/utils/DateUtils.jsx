@@ -17,7 +17,7 @@ export function dataTimeString(date) {
 }
 
 export function dateWithoutSeconds(sqlDate) {
-    var date = new Date(line.date);
+    var date = new Date(sqlDate);
     date.setSeconds(0);
     date.setMilliseconds(0);
     date.setUTCMilliseconds(0);

@@ -9,6 +9,7 @@ import * as d3 from 'd3';
 import { Crosshair } from './Crosshair';
 import { TemperatureHumidity } from './CrossGraph/TemperatureHumidity';
 import { LuminosityTemperature } from './CrossGraph/LuminosityTemperature';
+import { GraphType } from './Channel/GraphType';
 
 export class GraphBoard extends Component {
 
@@ -18,6 +19,7 @@ export class GraphBoard extends Component {
   chartWidth=1270;
   chartHeight=200;
   interChart=20;
+  crosshairValues = new Map();
 
   dateAxisRef;
 
@@ -30,6 +32,7 @@ export class GraphBoard extends Component {
     this.state = {
       capteur: this.props.capteur,
       channels: [],
+      mapChannels: new Map(),
       jsonData: [],
       mapJsonData: new Map(),
       dateInterval: {
@@ -49,7 +52,7 @@ export class GraphBoard extends Component {
         dataTimeMs: undefined,
         timeMs: undefined,
   }
-};
+  };
     this.loadCapteurChannels();
     this.getDateInterval(this.state.capteur.id)
 
@@ -66,8 +69,18 @@ export class GraphBoard extends Component {
   loadCapteurChannels = () => {
 
     $.getJSON('http://test.ideesalter.com/alia_searchChannelsFromCapteur.php?capteur_reference_id=' + this.state.capteur.capteur_reference_id,
-      (data) => { this.setState( {channels: data} );
-    });
+      (data) => {
+        var mapChannels = new Map();
+
+        data.forEach((channel)=>{
+          var graphType = GraphType.getGraphTypeFromMeasuretype(channel.measure_type);
+          mapChannels.set(graphType, channel);
+        })
+        this.setState( {
+          channels: data,
+          mapChannels: mapChannels
+        });
+      });
   }
 
   getDateInterval = (id) => {
@@ -150,7 +163,23 @@ export class GraphBoard extends Component {
   }
 
   handleSelectedValue = (graphType, y) => {
-
+    this.crosshairValues.set(graphType, y);
+    // console.log("handle crosshairValues")
+    switch(graphType) {
+      case GraphType.HUMIDITE:
+        this.setState( {
+          currentHumidity:y
+        });
+        break;
+      case GraphType.TEMPERATURE:
+      this.setState( {
+        currentTemperature:y
+      });
+      break;
+    case GraphType.PRESENCE:
+      case GraphType.LUMINOSITE:
+      default:
+    }
   }
 
   getTimeScale = () => {
@@ -179,8 +208,6 @@ export class GraphBoard extends Component {
 
     var svgHeight = this.state.channels.length * this.chartHeight
       + (this.state.channels.length-1) * this.interChart + 200;
-
-    console.log(this.state.channels);
 
     return (
       <div pointerEvents="all">
@@ -221,7 +248,8 @@ export class GraphBoard extends Component {
                                 displayValue={this.state.displayValue}
                                 xPosition={this.state.crosshair.xPosition}
                                 yPosition={this.state.crosshair.yPosition}
-                                handleSelectedValue={this.handleSelectedValue}/>
+                                handleSelectedValue={this.handleSelectedValue}
+                              />
                             </g>
                           )
                         })
@@ -254,7 +282,16 @@ export class GraphBoard extends Component {
                       </tr>
                       <tr>
                         <td colSpan='2'>
-                          <TemperatureHumidity chartWidth='100%' chartHeight='300'/>
+                          <TemperatureHumidity chartWidth='340' chartHeight='300'
+                            dateInterval={this.state.dateInterval}
+                            capteurId={this.state.capteur.id}
+                            channelX={this.state.mapChannels.get(GraphType.TEMPERATURE)} 
+                            channelY={this.state.mapChannels.get(GraphType.HUMIDITE)} 
+                            channelXType={GraphType.TEMPERATURE} 
+                            channelYType={GraphType.HUMIDITE}
+                            currentHumidity={this.state.currentHumidity}
+                            currentTemperature={this.state.currentTemperature}
+                        />
                         </td>
                       </tr>
                       <tr>

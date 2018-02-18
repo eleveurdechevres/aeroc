@@ -102,7 +102,6 @@ export class GraphChannel extends React.Component {
         // d3.curveMonotoneX
         // d3.curveCatmullRom
         
-        d3.select(this.chartRef).selectAll("path").remove();
         d3.select(this.chartRef).append("path")
             .datum(datum)
             .attr("d", this.lineFunction)
@@ -168,7 +167,7 @@ export class GraphChannel extends React.Component {
                     .tickFormat(d3.timeFormat("%H:%M"))
                     // .ticks(d3.timeMinute.every(60))
                 )
-            .selectAll("text")	
+            .selectAll("text")
     }
     
     componentDidMount() {
@@ -222,11 +221,11 @@ export class GraphChannel extends React.Component {
             .attr("opacity", opacity);
         d3.select(this.yValueRef)
             .text(value)
-
+        
         // X Value
         var date = new Date(timeMs);
         var formattedDate = dataTimeString(date)
-        var time = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+        var time = date.getUTCHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
         d3.select(this.dateRef)
             .text(formattedDate)
         d3.select(this.gDateRef)
