@@ -35,24 +35,24 @@ const Patm = 101300;
 const K = 0.00066;
 const P = Patm;
 
-export function get_X (η, φ) {
+export function get_x_from_η_φ (η, φ) {
     η = η*1;
     φ = φ/100;
-    var Pvs = get_Pvs(η);
-    var Pv = get_Pv(φ, Pvs);
+    var Pvs = get_Pvs_from_η(η);
+    var Pv = get_Pv_from_φ_Pvs(φ, Pvs);
     var x=0.622*(Pv/(Patm - Pv));
 
     return x*1000;
 }
 
 
-function get_Pvs(η) {
+function get_Pvs_from_η(η) {
     η = η*1;
     var Pvs = Math.pow(10, (2.7877+((7.625*η) / (241.6+η))));
     return Pvs;
 }
 
-function get_Pv(φ, Pvs) {
+function get_Pv_from_φ_Pvs(φ, Pvs) {
     φ = φ*1;
     Pvs = Pvs*1;
     return φ*Pvs;
@@ -64,12 +64,36 @@ export function get_η(h, x) {
     return (h - 2501*x) / (1.006 + 1.83*x)
 }
 
-function get_η_From_ηh(ηh) {
-    var Pvsηh = get_Pvs(ηh);
+function get_η_from_ηh(ηh) {
+    var Pvsηh = get_Pvs_from_η(ηh);
 }
 
-export function get_η_From_ηh_φ(ηh, φ) {
-    var Pvsηh = get_Pvs(ηh);
-    var Pv = get_Pvs(φ, Pvsηh);
+export function get_η_from_ηh_φ(ηh, φ) {
+    var Pvsηh = get_Pvs_from_η(ηh);
+    var Pv = get_Pv_from_φ_Pvs(φ, Pvsηh);
     return (Pvsηh-Pv)/(K*P)+ηh;
+}
+
+export function get_η_from_φ_x(φ, x) {
+    φ = φ/100;
+    x = x/1000;
+    var Pv = get_Pv_from_x(x);
+    var Pvs = get_Pvs_from_φ_Pv(φ, Pv);
+    return get_η_from_Pvs(Pvs);
+}
+
+// x = 0.622 Pv/(Patm -Pv)
+function get_Pv_from_x(x) {
+    x = x*1;
+    return x*Patm/(0.622 + x);
+}
+
+// φ = Pv / Pvs
+function get_Pvs_from_φ_Pv(φ, Pv) {
+    φ = φ*1;
+    Pv = Pv*1;
+    return Pv/φ;
+}
+function get_η_from_Pvs(Pvs) {
+    return 241.6*(Math.log10(Pvs)-2.7877)/(7.625-Math.log10(Pvs)+2.7877);
 }

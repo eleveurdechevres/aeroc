@@ -16,7 +16,7 @@ export class Crosshair extends React.Component {
         return (
             <g pointerEvents="none">
                 {/* Ligne verticale */}
-                <g display={this.props.displayVertical}>
+                <g display={this.props.displayVertical?null:"none"}>
                     <line x1={this.props.xPosition}
                         x2={this.props.xPosition}
                         y1={this.props.top}

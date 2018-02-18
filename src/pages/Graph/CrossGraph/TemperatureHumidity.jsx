@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { momentToSql, dateWithoutSeconds } from '../../../utils/DateUtils';
 import * as d3 from 'd3';
-import { get_X, get_η, get_η_From_ηh_φ } from "../../../utils/CalculsThermiques"
+import { get_x_from_η_φ, get_η, get_η_from_ηh_φ, get_η_from_φ_x } from "../../../utils/CalculsThermiques"
 import { GraphType } from '../Channel/GraphType';
 export class TemperatureHumidity extends React.Component {
 
@@ -13,6 +13,13 @@ export class TemperatureHumidity extends React.Component {
     xAxisRef;
     yAxisRef;
     currentCrosshairRef;
+    enveloppesRef;
+    A0EnveloppeRef;
+    A1EnveloppeRef;
+    A2EnveloppeRef;
+    A3EnveloppeRef;
+    A4EnveloppeRef;
+
 
     channelXType;
     channelYType;
@@ -31,7 +38,8 @@ export class TemperatureHumidity extends React.Component {
 
         // configure ScaleX
         this.scaleX=d3.scaleLinear();
-        this.scaleX.domain(this.channelXType.domain.slice().reverse());
+//        this.scaleX.domain(this.channelXType.domain.slice().reverse());
+        this.scaleX.domain([0,50]);
         this.scaleX.range([0, this.chartWidth])
     
         // configure ScaleY
@@ -90,9 +98,9 @@ export class TemperatureHumidity extends React.Component {
     }
 
 
-    lineFunction = d3.line()
+    lineFunction_η_φ = d3.line()
     .x((d) => { return this.scaleX(d.x) })
-    .y((d) => { return this.scaleY(get_X (d.x, d.y))})
+    .y((d) => { return this.scaleY(get_x_from_η_φ(d.x, d.y))})
     .curve(d3.curveLinear);
         // d3.curveLinear
         // d3.curveStep
@@ -111,9 +119,8 @@ export class TemperatureHumidity extends React.Component {
             }
             var currentCourbe = d3.select(this.referenceChartsHumidityRef).append("g")
             currentCourbe.datum(dataCourbeHumidite)
-                .attr("class", "line")
                 .append("path")
-                .attr("d", this.lineFunction)
+                .attr("d", this.lineFunction_η_φ)
                 .attr("fill", "none")
                 .attr("stroke", "gray")
                 .attr("stroke-width", 1);
@@ -125,7 +132,7 @@ export class TemperatureHumidity extends React.Component {
         for( var h=0 ; h<=60 ; h+=2 ) {
             var η1 = h;
             var η2 = get_η(h, x2);
-            var x1 = get_X(η1, 100);
+            var x1 = get_x_from_η_φ(η1, 100);
             var x2 = 0;
 
             var currentCourbe = d3.select(this.referenceChartsEnthalpieRef).append("g")
@@ -143,8 +150,8 @@ export class TemperatureHumidity extends React.Component {
         var x2=0;
         for( var ηh=0 ; ηh<=60 ; ηh+=2 ) {
             var η1 = ηh;
-            var x1 = get_X(η1, 100);
-            var η2 = get_η_From_ηh_φ(ηh, 0);
+            var x1 = get_x_from_η_φ(η1, 100);
+            var η2 = get_η_from_ηh_φ(ηh, 0);
             var x2 = 0;
 
             var currentCourbe = d3.select(this.referenceChartsTemperatureEnthalpieRef).append("g")
@@ -155,19 +162,143 @@ export class TemperatureHumidity extends React.Component {
                 .attr("y2", this.scaleY(x2))
                 .attr("stroke", "gray")
                 .attr("strokeWidth", 1);
+            currentCourbe.append("text")
+                .attr("x", this.scaleX(η1)-10)
+                .attr("y", this.scaleY(x1)-5)
+                .attr("font-size", "10")
+                .attr("fill", "black")
+                .text(η1);
         }
     }
 
+    lineFunction_η_x = d3.line()
+    .x((d) => { return this.scaleX(d.η)})
+    .y((d) => { return this.scaleY(d.x)})
+    .curve(d3.curveLinear);
+
+    drawA0Enveloppe = () => {
+        var dataA0 = [
+            {η: 18, x: 6.2},
+            {η: 27, x: 6.2},
+            {η: 27, x: 10.25},
+            {η: get_η_from_φ_x(60, 10.25), x: 10.25}, // φ=60%, x=10.25
+            {η: 22, x:get_x_from_η_φ(22, 60)},  // η=20, φ=60%
+            {η: 20, x:get_x_from_η_φ(20, 60)},  // η=20, φ=60%
+            {η: 18, x:get_x_from_η_φ(18, 60)},  // η=20, φ=60%
+            {η: 18, x: 6.2},
+        ];
+        this.drawEnveloppe( this.A0EnveloppeRef, dataA0);
+        d3.select(this.A0EnveloppeRef).append("text")
+            .attr("x", this.scaleX(24))
+            .attr("y", this.scaleY(10.5))
+            .attr("font-size", "10")
+            .attr("fill", "black")
+            .text("A0");
+    }
+
+    drawA1Enveloppe = () => {
+        var dataA1 = [
+            {η: 15,   x: get_x_from_η_φ(15, 20)},
+            {η: 17.5, x: get_x_from_η_φ(17.5, 20)},
+            {η: 20,   x: get_x_from_η_φ(20, 20)},
+            {η: 22.5, x: get_x_from_η_φ(22.5, 20)},
+            {η: 25,   x: get_x_from_η_φ(25, 20)},
+            {η: 27.5, x: get_x_from_η_φ(27.5, 20)},
+            {η: 30,   x: get_x_from_η_φ(30, 20)},
+            {η: 32,   x: get_x_from_η_φ(32, 20)},
+            {η: 32,   x: 12},
+            {η: get_η_from_φ_x(80, 12), x: 12},
+            {η: 19,   x: get_x_from_η_φ(19, 80)},
+            {η: 17,   x: get_x_from_η_φ(17, 80)},
+            {η: 15,   x: get_x_from_η_φ(15, 80)},
+            {η: 15,   x: get_x_from_η_φ(15, 20)},
+        ];
+        this.drawEnveloppe( this.A1EnveloppeRef, dataA1);
+        d3.select(this.A1EnveloppeRef).append("text")
+            .attr("x", this.scaleX(27))
+            .attr("y", this.scaleY(12.5))
+            .attr("font-size", "10")
+            .attr("fill", "black")
+            .text("A1");
+    }
+
+    drawA2Enveloppe = () => {
+        var dataA2 = [
+            {η: 10,   x: get_x_from_η_φ(10, 20)},
+            {η: 12.5, x: get_x_from_η_φ(12.5, 20)},
+            {η: 15,   x: get_x_from_η_φ(15, 20)},
+            {η: 17.5, x: get_x_from_η_φ(17.5, 20)},
+            {η: 20,   x: get_x_from_η_φ(20, 20)},
+            {η: 22.5, x: get_x_from_η_φ(22.5, 20)},
+            {η: 25,   x: get_x_from_η_φ(25, 20)},
+            {η: 27.5, x: get_x_from_η_φ(27.5, 20)},
+            {η: 30,   x: get_x_from_η_φ(30, 20)},
+            {η: 32,   x: get_x_from_η_φ(32, 20)},
+            {η: 35,   x: get_x_from_η_φ(35, 20)},
+            {η: 35,   x: 15.5},
+            {η: get_η_from_φ_x(80, 15.5), x: 15.5},
+            {η: 22,   x: get_x_from_η_φ(22, 80)},
+            {η: 19,   x: get_x_from_η_φ(19, 80)},
+            {η: 17,   x: get_x_from_η_φ(17, 80)},
+            {η: 15,   x: get_x_from_η_φ(15, 80)},
+            {η: 12.5, x: get_x_from_η_φ(12.5, 80)},
+            {η: 10,   x: get_x_from_η_φ(10, 80)},
+            {η: 10,   x: get_x_from_η_φ(10, 20)},
+        ];
+        this.drawEnveloppe( this.A2EnveloppeRef, dataA2);
+        d3.select(this.A2EnveloppeRef).append("text")
+            .attr("x", this.scaleX(31))
+            .attr("y", this.scaleY(16))
+            .attr("font-size", "10")
+            .attr("fill", "black")
+            .text("A2");
+    }
+
+    isInA0 = (η, φ) => {
+        var x = get_x_from_η_φ(η, φ);
+        if( η >= 18 && η <= 27 ) {
+            if(x => 6.2 && x <= 10.25 ) {
+                if( φ <= 60 ) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    isInA1 = () => {
+        
+    }
+
+    isInA2 = () => {
+        
+    }
+
+    isInA3 = () => {
+        
+    }
+
+
+
+    drawEnveloppe = (ref, data) => {
+        d3.select(ref)
+            .datum(data)
+            .append("path")
+            .attr("d", this.lineFunction_η_x)
+            .attr("fill", "none")
+            .attr("stroke", "black")
+            .attr("stroke-width", 1);
+    }
 
     drawGraph = (mapValues) => {
         d3.select(this.chartRef).selectAll("dots")
             .data(this.datum)
             .enter().append("circle")
                 .attr("cx", (d) => this.scaleX(d.x))
-                .attr("cy", (d) => this.scaleY(get_X (d.x, d.y)))
+                .attr("cy", (d) => this.scaleY(get_x_from_η_φ (d.x, d.y)))
                 .attr("r", 1)
                 .attr("fill", "none")
-                .attr("stroke", "pink")
+                .attr("stroke", (d) => this.isInA0(d.x, d.y)?"green":"pink")
                 .attr("stroke-width", 1);
     };
 
@@ -200,9 +331,21 @@ export class TemperatureHumidity extends React.Component {
         this.drawReferenceCourbesHumidite();
         this.drawReferenceCourbesEnthalpie();
         this.drawReferenceCourbesTemperatureEnthalpie();
+        this.drawA0Enveloppe();
+        this.drawA1Enveloppe();
+        this.drawA2Enveloppe();
     }
 
+
     render() {
+        var translateX = this.scaleX(this.props.currentTemperature);
+        var translateY = this.scaleY(get_x_from_η_φ (this.props.currentTemperature, this.props.currentHumidity));
+        var translateCrosshair='translate(0,0)';
+        var displayCrosshair=false;
+        if(translateX !== "NaN" && translateY !== "NaN") {
+            translateCrosshair = 'translate(' + translateX + ',' + translateY + ')';
+            displayCrosshair=false;
+        }
         return (
             <svg width={this.chartWidth} height={this.chartHeight}>
                 <rect x='0' y='0' width={this.chartWidth} height={this.chartHeight} fill="white" stroke="black"/>
@@ -213,8 +356,15 @@ export class TemperatureHumidity extends React.Component {
                     <g ref={(ref) => {this.chartRef = ref}}/>
                     <g ref={(ref) => {this.xAxisRef = ref}} transform={'translate(0,'+this.chartHeight+')'}/>
                     <g ref={(ref) => {this.yAxisRef = ref}} transform={'translate('+this.chartWidth+', 0)'}/>
-                    <g ref={(ref) => {this.currentCrosshairRef}} transform={'translate(' + this.scaleX(this.props.currentTemperature) + ',' + this.scaleY(get_X (this.props.currentTemperature, this.props.currentHumidity)) + ')'}>
+                    <g ref={(ref) => {this.currentCrosshairRef}} transform={translateCrosshair} opacity={displayCrosshair?1:"none"}>
                         <circle cx="0" cy="0" r="5" fill="red"/>
+                    </g>
+                    <g ref={(ref) => {this.enveloppesRef}}>
+                        <g ref={(ref) => {this.A0EnveloppeRef = ref}}/>
+                        <g ref={(ref) => {this.A1EnveloppeRef = ref}}/>
+                        <g ref={(ref) => {this.A2EnveloppeRef = ref}}/>
+                        <g ref={(ref) => {this.A3EnveloppeRef = ref}}/>
+                        <g ref={(ref) => {this.A4EnveloppeRef = ref}}/>
                     </g>
                 </g>
             </svg>

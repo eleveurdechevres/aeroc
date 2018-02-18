@@ -42,8 +42,8 @@ export class GraphBoard extends Component {
         maxDate: moment()
       },
       crosshair: {
-        verticalDisplayed: "none",
-        horizontalDisplayed: "none",
+        verticalDisplayed: false,
+        horizontalDisplayed: false,
         xPosition: 0,
         yPosition: 0
       },
@@ -127,8 +127,8 @@ export class GraphBoard extends Component {
       case "mousemove":
         this.setState({
           crosshair: {
-            verticalDisplayed: null,
-            horizontalDisplayed: null,
+            verticalDisplayed: true,
+            horizontalDisplayed: true,
             xPosition: xMouse,
             yPosition: yMouse
           },
@@ -142,8 +142,8 @@ export class GraphBoard extends Component {
       case "mouseout":
         this.setState({
           crosshair: {
-            verticalDisplayed: "none",
-            horizontalDisplayed: "none",
+            verticalDisplayed: false,
+            horizontalDisplayed: false,
             xPosition: xMouse,
             yPosition: yMouse
           },
