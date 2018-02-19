@@ -255,23 +255,33 @@ export class TemperatureHumidity extends React.Component {
     }
 
     isInA0 = (η, φ) => {
+        if( φ > 60 ) return false;
+        if( η < 18) return false;
+        if( η > 27 ) return false;
         var x = get_x_from_η_φ(η, φ);
-        if( η >= 18 && η <= 27 ) {
-            if(x => 6.2 && x <= 10.25 ) {
-                if( φ <= 60 ) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        if( x < 6.2) return false;
+        if( x > 10.25) return false;
+        return true;
     }
 
-    isInA1 = () => {
-        
+    isInA1 = (η, φ) => {
+        if( φ > 80 ) return false;
+        if( φ < 20 ) return false;
+        if( η < 15) return false;
+        if( η > 32 ) return false;
+        var x = get_x_from_η_φ(η, φ);
+        if( x > 12) return false;
+        return true;
     }
 
-    isInA2 = () => {
-        
+    isInA2 = (η, φ) => {
+        if( φ > 80 ) return false;
+        if( φ < 20 ) return false;
+        if( η < 10) return false;
+        if( η > 35 ) return false;
+        var x = get_x_from_η_φ(η, φ);
+        if( x > 15.5) return false;
+        return true;
     }
 
     isInA3 = () => {
@@ -290,6 +300,13 @@ export class TemperatureHumidity extends React.Component {
             .attr("stroke-width", 1);
     }
 
+    functionColor = (d) => {
+        if( this.isInA0(d.x, d.y) ) return "green";
+        if( this.isInA1(d.x, d.y) ) return "orange";
+        if( this.isInA2(d.x, d.y) ) return "red";
+        return "darkred";
+    }
+
     drawGraph = (mapValues) => {
         d3.select(this.chartRef).selectAll("dots")
             .data(this.datum)
@@ -298,7 +315,7 @@ export class TemperatureHumidity extends React.Component {
                 .attr("cy", (d) => this.scaleY(get_x_from_η_φ (d.x, d.y)))
                 .attr("r", 1)
                 .attr("fill", "none")
-                .attr("stroke", (d) => this.isInA0(d.x, d.y)?"green":"pink")
+                .attr("stroke", this.functionColor)
                 .attr("stroke-width", 1);
     };
 
