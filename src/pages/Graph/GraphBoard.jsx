@@ -25,6 +25,46 @@ export class GraphBoard extends Component {
 
   verticalCrosshairRef;
   verticalCrosshairLineRef;
+  brushRef;
+  globalBrushRef;
+
+  brush = d3.brushX()
+    .extent([[0, 0], [this.chartWidth, 1000]])
+    .on("brush end", this.brushed);
+
+  globalBrush = d3.brushX()
+    .extent([[0, 0], [this.chartWidth, this.topMargin]])
+    .on("brush end", this.globalBrushed);
+
+  globalBrushed = () => {
+    console.log("global brushed")
+    var s = d3.event.selection || this.getTimeScale().range();
+    //console.log(s);
+    // x.domain(s.map(x2.invert, x2));
+    // focus.select(".area").attr("d", area);
+    // focus.select(".axis--x").call(xAxis);
+    // svg.select(".zoom").call(zoom.transform, d3.zoomIdentity
+    //     .scale(width / (s[1] - s[0]))
+    //     .translate(-s[0], 0));
+  }
+
+  brushed = () => {
+    console.log("BRUSHED1");
+    // var s = d3.event.selection || this.getTimeScale().range();
+    // console.log(s);
+    // d3.select(this.brushRef)
+    // .call(this.brush)
+    // .call(this.brush.clear());
+    //.call(this.globalBrush.move, this.getTimeScale().range())
+
+    //console.log(s);
+    // x.domain(s.map(x2.invert, x2));
+    // focus.select(".area").attr("d", area);
+    // focus.select(".axis--x").call(xAxis);
+    // svg.select(".zoom").call(zoom.transform, d3.zoomIdentity
+    //     .scale(width / (s[1] - s[0]))
+    //     .translate(-s[0], 0));
+  }
 
 
   constructor(props) {
@@ -119,6 +159,11 @@ export class GraphBoard extends Component {
   }
 
   componentDidMount() {
+    d3.select(this.brushRef)
+      .call(this.brush)
+    d3.select(this.globalBrushRef)
+      .call(this.globalBrush)
+      .call(this.globalBrush.move, this.getTimeScale().range())
   }
 
   handleMouseEvents = (xMouse, yMouse, timeMs, dataTimeMs, eventType) => {
@@ -217,6 +262,7 @@ export class GraphBoard extends Component {
                 <td width="100%">
                   <svg width="100%" height={svgHeight}>
                     <g transform={'translate(' + this.originGraphX + ',' + this.topMargin + ')'}>
+                      <g ref={(ref) => {this.brushRef = ref}}/>
                       <Crosshair displayVertical={this.state.crosshair.verticalDisplayed}
                         displayHorizontal={this.state.crosshair.horizontalDisplayed}
                         top={0}
@@ -241,7 +287,7 @@ export class GraphBoard extends Component {
                                 capteurId={this.state.capteur.id}
                                 channelData={data} 
                                 chartIndex={index} 
-                                chartHeight={this.chartHeight} 
+                                interChart={this.interChart} 
                                 dateInterval={this.state.dateInterval} 
                                 handleMouseEvents={this.handleMouseEvents} 
                                 timeScale={this.getTimeScale()}
@@ -254,6 +300,9 @@ export class GraphBoard extends Component {
                           )
                         })
                       }
+                    </g>
+                    <g transform={'translate(' + this.originGraphX + ',0)'}>
+                      <g ref={(ref) => {this.globalBrushRef = ref}}/>
                     </g>
                   </svg>
                 </td>
