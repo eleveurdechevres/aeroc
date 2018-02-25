@@ -2,7 +2,7 @@ import mobx, {observable, action, computed} from 'mobx';
 import * as d3 from "d3";
 import $ from 'jquery'; 
 
-export default @observable class ChartStore {
+@observable export default class ChartStore {
   @observable static visible = false;
 }
 

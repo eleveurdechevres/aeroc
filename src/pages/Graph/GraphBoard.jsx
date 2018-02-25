@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 import $ from 'jquery'; 
 import DatePicker from 'react-datepicker';
 import moment from 'moment';
@@ -11,7 +11,7 @@ import { TemperatureHumidity } from './CrossGraph/TemperatureHumidity';
 import { LuminosityTemperature } from './CrossGraph/LuminosityTemperature';
 import { GraphType } from './Channel/GraphType';
 
-export class GraphBoard extends Component {
+export class GraphBoard extends React.Component {
 
   topMargin=20;
   originGraphX=150;
@@ -255,15 +255,16 @@ export class GraphBoard extends Component {
       + (this.state.channels.length-1) * this.interChart + 200;
 
     return (
-      <div pointerEvents="all">
+      <div>
           <table>
             <tbody>
               <tr>
-                <td width="100%">
+                <td>
                   <svg width="100%" height={svgHeight}>
                     <g transform={'translate(' + this.originGraphX + ',' + this.topMargin + ')'}>
                       <g ref={(ref) => {this.brushRef = ref}}/>
-                      <Crosshair displayVertical={this.state.crosshair.verticalDisplayed}
+                      <Crosshair
+                        displayVertical={this.state.crosshair.verticalDisplayed}
                         displayHorizontal={this.state.crosshair.horizontalDisplayed}
                         top={0}
                         bottom={1000}

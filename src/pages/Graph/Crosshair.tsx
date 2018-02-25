@@ -1,12 +1,25 @@
 import * as React from 'react';
 
-export class Crosshair extends React.Component {
-    constructor(props) {
+interface IProps {
+    displayVertical: boolean;
+    displayHorizontal: boolean;
+    top: number;
+    bottom: number;
+    left: number;
+    right: number;
+    xPosition: number;
+    yPosition: number;
+}
+
+export class Crosshair extends React.Component<IProps, {}> {
+    
+    constructor(props: any) {
         super(props);
+        this.props = props;
     }
 
 
-    shouldComponentUpdate(nextProps, nextState) {
+    shouldComponentUpdate(nextProps: any, nextState: any) {
         if( nextProps !== this.props ) {
             return true;
         }
@@ -16,7 +29,7 @@ export class Crosshair extends React.Component {
         return (
             <g pointerEvents="none">
                 {/* Ligne verticale */}
-                <g display={this.props.displayVertical?null:"none"}>
+                <g opacity={this.props.displayVertical?1:0}>
                     <line x1={this.props.xPosition}
                         x2={this.props.xPosition}
                         y1={this.props.top}

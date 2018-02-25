@@ -1,28 +1,90 @@
 import * as React from 'react';
-import $ from 'jquery'; 
+import * as $ from 'jquery'; 
 import * as d3 from "d3";
-import { GraphType } from './GraphType';
+import { GraphType} from './GraphType';
 import { momentToSql, dataTimeString } from '../../../utils/DateUtils';
+import * as Moment from 'moment';
 
-export class GraphChannel extends React.Component {
+interface IProps {
+    originGraphX: number;
+    originGraphY: number;
+    chartWidth: number;
+    chartHeight: number;
+    capteurId: number;
+    channelData: IChannelData;
+    chartIndex: number;
+    interChart: number;
+    dateInterval: IDateInterval;
+    handleMouseEvents: (
+        xMouse: number, 
+        yMouse: number, 
+        timeMsMouse: number, 
+        dataTimeMs: number, 
+        d3Event: any) => void;
+    timeScale: any;
+    displayValue: IDisplayValue;
+    xPosition: number;
+    yPosition: number;
+    handleSelectedValue: (
+        graphType: any,
+        y: number | undefined ) => void;
+};
 
-    chartRef;
-    chartContextRef;
-    overlayRef;
+interface IState {
+    graphType: any;
+};
+
+interface IDisplayValue {
+    display: false;
+    dataTimeMs: number;
+    timeMs: number;
+}
+
+interface IChannelData {
+    capteur_reference_id: string;       //"AEO_ZW100"
+    id: number;                         // 4
+    id_type_mesure: number;             // 4
+    max_range: number;                  // 1000
+    measure_type: string;               // "Luminosité"
+    min_range: number;                  // 0
+    precision_step: number;             // 1
+    unit: string;                       // "Lux"
+};
+
+interface IDateInterval {
+    startDate: Moment.Moment,
+    stopDate: Moment.Moment,
+    minDate: Moment.Moment,
+    maxDate: Moment.Moment
+};
+
+
+export class GraphChannel extends React.Component<IProps, IState> {
+
+    chartRef: SVGGElement | null;
+    chartContextRef: SVGGElement | null;
+    overlayRef: SVGRectElement  | null;
     
-    yValueDisplayedRef;
-    yValueRef;
+    yValueDisplayedRef: SVGGElement | null;
+    yValueRef: SVGGElement | null;
 
-    ghorizontalCrosshairRef;
-    horizontalCrosshairValueRef;
+    ghorizontalCrosshairRef: SVGGElement | null;
+    horizontalCrosshairValueRef: SVGGElement | null;
 
-    gDateRef;
-    dateRef;
+    gDateRef: SVGGElement | null;
+    dateRef: SVGGElement | null;
 
-    startDate;
-    stopDate;
+    axisBottomRef: SVGGElement | null;
 
-    mapValues= new Map();
+    startDate: string;
+    stopDate: string;
+
+    originGraphX: number;
+    originGraphY: number;
+    chartWidth: number;
+    chartHeight: number;
+
+    mapValues = new Map<number, number>();
 
     // <GraphChannel
     //     capteurId
@@ -47,7 +109,7 @@ export class GraphChannel extends React.Component {
     // precision_step:"1"
     // unit:"Lux"
 
-    constructor(props) {
+    constructor(props: IProps) {
         super(props);
         this.state = {
             graphType: GraphType.getGraphTypeFromMeasuretype(this.props.channelData.measure_type)
@@ -58,7 +120,7 @@ export class GraphChannel extends React.Component {
         this.chartHeight=this.props.chartHeight;
     }
 
-    loadJsonFromAeroc = (capteurId, channelId, dateBegin, dateEnd) => {
+    loadJsonFromAeroc = (capteurId: number, channelId: number, dateBegin: string, dateEnd: string) => {
         // LOAD DATA from AEROC
         // date_begin=2017/12/09 20:13:04&date_end=2018/01/24 21:19:06
         //console.log('http://test.ideesalter.com/alia_readMesure.php?capteur_id=' + capteurId + '&channel_id=' + channelId + '&date_begin=' + dateBegin + '&date_end=' + dateEnd)
@@ -67,7 +129,7 @@ export class GraphChannel extends React.Component {
             .then((response) => response.json())
             .then((data) => {
 
-                data.forEach((line) => {
+                data.forEach((line: {date:string, valeur:number}) => {
                     var date = new Date(line.date);
                     date.setSeconds(0);
                     date.setMilliseconds(0);
@@ -81,17 +143,17 @@ export class GraphChannel extends React.Component {
             });
     }
 
-    lineFunction = d3.line()
+    lineFunction = d3.line<{date: Date, valeur: number}>()
     .x((d) => { return this.props.timeScale(d.date); })
     .y((d) => { return this.state.graphType.scaleFunction(d.valeur); })
     .curve(d3.curveStepAfter);
 
 
-    drawGraph = (data) => {
+    drawGraph = (data: Map<number, number>) => {
 
-        var datum = [];
+        var datum: {date: Date, valeur: number}[] = [];
         data.forEach(
-            (valeur, timeMs) => { datum.push( {date: new Date(timeMs), valeur: valeur} ) }
+            (valeur: number, timeMs: number) => { datum.push( {date: new Date(timeMs), valeur: valeur} ) }
         );
         // d3.curveLinear
         // d3.curveStep
@@ -112,10 +174,16 @@ export class GraphChannel extends React.Component {
 
     handleMouseEvents = () => {
 
-        var xMouse = d3.mouse(this.overlayRef)[0];
-        var yMouse = d3.mouse(this.overlayRef)[1];
+        var xMouse = 0;
+        var yMouse = 0;
+        var timeMsMouse = 0;
 
-        var timeMsMouse = this.props.timeScale.invert(d3.mouse(this.overlayRef)[0]);
+        if( this.overlayRef ) {
+            xMouse = d3.mouse(this.overlayRef)[0];
+            yMouse = d3.mouse(this.overlayRef)[1];
+            timeMsMouse = this.props.timeScale.invert(d3.mouse(this.overlayRef)[0]);
+        }
+
         var keys = Array.from(this.mapValues.keys());
         var indexTimeMs = d3.bisectLeft(keys, timeMsMouse);
         var dataTimeMs = keys[indexTimeMs];
@@ -139,7 +207,6 @@ export class GraphChannel extends React.Component {
                 break;
 
         }
-
         this.props.handleMouseEvents(xMouse, yMouse, timeMsMouse, dataTimeMs, d3.event.type);
     }
 
@@ -157,7 +224,7 @@ export class GraphChannel extends React.Component {
             .attr("fill", "black")
             .style("text-anchor", "middle")
             .attr("y", -9) 
-            .text(function(d) { return d });
+            .text((d) => { return d.toString() });
     }
 
     
@@ -187,11 +254,11 @@ export class GraphChannel extends React.Component {
         //this.drawContextAxis();
     };
 
-    shouldComponentUpdate(nextProps, nextState) {
+    shouldComponentUpdate(nextProps: IProps, nextState: IState) {
         return false;
     }
 
-    componentWillReceiveProps(props) {
+    componentWillReceiveProps(props: IProps) {
         var startDate = momentToSql(props.dateInterval.startDate);
         var stopDate = momentToSql(props.dateInterval.stopDate);
         if( startDate !== this.startDate || stopDate !== this.stopDate) {
@@ -212,7 +279,7 @@ export class GraphChannel extends React.Component {
         }
     }
 
-    displayCrosshair = (display, dataTimeMs, timeMs) => {
+    displayCrosshair = (display: boolean, dataTimeMs: number, timeMs: number) => {
         var opacity = display?1:0;
         var value = this.mapValues.get(dataTimeMs);
 
@@ -220,7 +287,7 @@ export class GraphChannel extends React.Component {
         d3.select(this.yValueDisplayedRef)
             .attr("opacity", opacity);
         d3.select(this.yValueRef)
-            .text(value)
+            .text(value?value.toString():"")
         
         // X Value
         var date = new Date(timeMs);

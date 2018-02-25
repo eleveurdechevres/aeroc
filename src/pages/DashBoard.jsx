@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { ClientSearchComponent } from './ClientSearchComponent';
 import { ClientSummary } from './ClientSummary';
 import { ClientsTable } from './Client/ClientsTable';
-import 'react-select/dist/react-select.css';
+import selectStyles  from 'react-select/dist/react-select.css';
 
 const customStyles = {
     overlay : {

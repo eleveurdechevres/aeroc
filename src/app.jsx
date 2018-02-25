@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 //import logo from './logo.svg';
-import './App.css';
+import './app.css';
 //import { GraphicComponent } from './pages/GraphicComponent.jsx';
 import { DashBoard } from './pages/DashBoard.jsx';
 class App extends Component {
@@ -14,7 +14,7 @@ class App extends Component {
           <h1 className="App-title">Welcome to React</h1>
         </header>
         <GraphicComponent />
-    */}
+      */}
         <DashBoard />
       </div>
     );

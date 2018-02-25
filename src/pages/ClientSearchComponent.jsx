@@ -1,6 +1,6 @@
-import React from 'react';
+import * as React from 'react';
 // import PropTypes from 'prop-types';
-import Select from 'react-select';
+import Select from 'react-select/dist/react-select';
 import fetch from 'isomorphic-fetch';
 
 export class ClientSearchComponent extends React.Component {
@@ -14,7 +14,7 @@ export class ClientSearchComponent extends React.Component {
         }
     }
 
-	onChange (client) {
+	onChange = (client) => {
 		this.setState({
 			client: client,
         });
@@ -39,7 +39,14 @@ export class ClientSearchComponent extends React.Component {
 
 			return (
 			<div className="section">
-                <AsyncComponent width="100" client={this.state.value} onChange={this.onChange.bind(this)} onValueClick={this.gotoUser} valueKey="id" labelKey="nom" loadOptions={this.getClients} />
+				<AsyncComponent 
+					width="100" 
+					client={this.state.value} 
+					onChange={this.onChange()} 
+					onValueClick={this.gotoUser} 
+					valueKey="id" 
+					labelKey="nom" 
+					loadOptions={this.getClients} />
 			</div>
 		);
 	}
