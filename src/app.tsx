@@ -1,9 +1,9 @@
-import React, { Component } from 'react';
+import * as React from 'react';
 //import logo from './logo.svg';
 import './app.css';
 //import { GraphicComponent } from './pages/GraphicComponent.jsx';
 import { DashBoard } from './pages/DashBoard.jsx';
-class App extends Component {
+export class App extends React.Component {
 
   render() {
     return (
@@ -20,5 +20,3 @@ class App extends Component {
     );
   }
 }
-
-export default App;

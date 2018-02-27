@@ -1,6 +1,6 @@
 module.exports = {
     // change to .tsx if necessary
-    entry: './src/app.jsx',
+    entry: './src/DashBoard.jsx',
     output: {
       filename: 'bundle.js'
     },
