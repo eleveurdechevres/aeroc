@@ -1,15 +1,3 @@
-// {
-//   "compilerOptions": {
-//     "module": "commonjs",
-//     "target": "ES6",
-//     "jsx": "react",
-//     "importHelpers": true,
-//     "emitDecoratorMetadata": true,
-//     "experimentalDecorators": true
-//   }
-// }
-
-
 {
     "compilerOptions": {
         "module": "commonjs",
